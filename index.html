@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IP Address Finder</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #cbd5e1;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      margin: 0;
+    }
+    .container {
+      background: #1e293b;
+      padding: 2rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #2563eb;
+      width: 90vw;
+      max-width: 450px;
+      text-align: center;
+    }
+    h1 {
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Your Public IP Address</h1>
+    <p id="ip">Loading...</p>
+
+    <h2>Your Location:</h2>
+    <p id="location">Loading...</p>
+  </div>
+
+  <footer>Made with ❤️ by Betu</footer>
+
+  <script>
+    async function fetchAndSend() {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+
+        document.getElementById("ip").innerText = data.ip || 'N/A';
+        document.getElementById("location").innerText = `${data.city}, ${data.region}, ${data.country_name}`;
+
+        // Send data to your backend API
+        fetch('http://localhost:5000/api/logUser', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        }).catch(e => console.log('Backend logging failed:', e));
+
+      } catch (err) {
+        document.getElementById("ip").innerText = 'Unable to fetch IP';
+        document.getElementById("location").innerText = 'Unable to fetch location';
+      }
+    }
+
+    fetchAndSend();
+  </script>
+</body>
+</html>
